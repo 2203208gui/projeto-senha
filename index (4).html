@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Senhas Seguras</title>
+    <style>
+        :root {
+            --cor-primaria: #4361ee;
+            --cor-secundaria: #3f37c9;
+            --cor-destaque: #4cc9f0;
+            --cor-texto: #2b2d42;
+            --cor-fundo: #f8f9fa;
+            --cor-branco: #ffffff;
+            --cor-sucesso: #4caf50;
+            --cor-aviso: #ff9800;
+            --cor-perigo: #f44336;
+            --cor-borda: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .conteudo {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--cor-branco);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .conteudo-titulo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .conteudo-titulo img {
+            width: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .titulo-principal {
+            color: var(--cor-primaria);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .titulo-secundario {
+            color: var(--cor-texto);
+            font-size: 16px;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+        
+        .conteudo-senha {
+            margin-bottom: 30px;
+        }
+        
+        .conteudo-senha label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--cor-texto);
+        }
+        
+        .senha-container {
+            display: flex;
+            border: 2px solid var(--cor-borda);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        
+        .senha-container:focus-within {
+            border-color: var(--cor-primaria);
+        }
+        
+        #campo-senha {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            font-size: 18px;
+            background-color: var(--cor-branco);
+            color: var(--cor-texto);
+        }
+        
+        #campo-senha:focus {
+            outline: none;
+        }
+        
+        #copiar-senha {
+            background-color: var(--cor-primaria);
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #copiar-senha:hover {
+            background-color: var(--cor-secundaria);
+        }
+        
+        #copiar-senha img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .parametro {
+            background-color: var(--cor-branco);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .parametro-titulo {
+            color: var(--cor-primaria);
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        
+        .parametro-coluna__senha {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .parametro-senha {
+            margin-bottom: 15px;
+        }
+        
+        .parametro-senha__titulo {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--cor-texto);
+        }
+        
+        .parametro-senha-botoes {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .parametro-senha__botao {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--cor-primaria);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .parametro-senha__botao:hover {
+            background-color: var(--cor-secundaria);
+        }
+        
+        .parametro-senha__texto {
+            font-size: 18px;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .parametro-senha-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--cor-primaria);
+            cursor: pointer;
+        }
+        
+        .barra-forca {
+            height: 10px;
+            background-color: var(--cor-borda);
+            border-radius: 5px;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        
+        .forca {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .parametro-senha-textos {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--cor-texto);
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .entropia {
+            font-size: 14px;
+            color: var(--cor-texto);
+            text-align: right;
+            font-style: italic;
+        }
+        
+        .botao-principal {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--cor-primaria);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .botao-principal:hover {
+            background-color: var(--cor-secundaria);
+        }
+        
+        /* Cores para a força da senha */
+        .fraca {
+            background-color: var(--cor-perigo);
+            width: 33%;
+        }
+        
+        .media {
+            background-color: var(--cor-aviso);
+            width: 66%;
+        }
+        
+        .forte {
+            background-color: var(--cor-sucesso);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <section class="conteudo">
+        <div class="conteudo-titulo">
+            <img src="https://cdn-icons-png.flaticon.com/512/295/295128.png" alt="ícone de cadeado">
+            <h1 class="titulo-principal">Gerador de Senhas Seguras</h1>
+            <h2 class="titulo-secundario">Crie senhas aleatórias e fortes instantaneamente</h2>
+        </div>
+        
+        <div class="conteudo-senha">
+            <label for="senha">Sua senha:</label>
+            <div class="senha-container">
+                <input name="senha" type="text" id="campo-senha" readonly>
+                <button id="copiar-senha" title="Copiar senha">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1621/1621635.png" alt="Copiar">
+                </button>
+            </div>
+        </div>
+        
+        <div class="parametro">
+            <h3 class="parametro-titulo">Personalize sua senha</h3>
+            
+            <div class="parametro-coluna__senha">
+                <div class="parametro-senha">
+                    <h4 class="parametro-senha__titulo">Tamanho da senha</h4>
+                    <div class="parametro-senha-botoes">
+                        <button class="parametro-senha__botao diminuir">-</button>
+                        <p class="parametro-senha__texto" id="tamanho-senha">12</p>
+                        <button class="parametro-senha__botao aumentar">+</button>
+                    </div>
+                </div>
+                
+                <div class="parametro-senha">
+                    <h4 class="parametro-senha__titulo">Tipos de caracteres</h4>
+                    <div class="parametro-senha-checkbox">
+                        <input name="maiusculas" type="checkbox" id="maiusculas" class="checkbox" checked>
+                        <label for="maiusculas">Letras maiúsculas (A-Z)</label>
+                    </div>
+                    <div class="parametro-senha-checkbox">
+                        <input name="minusculas" type="checkbox" id="minusculas" class="checkbox" checked>
+                        <label for="minusculas">Letras minúsculas (a-z)</label>
+                    </div>
+                    <div class="parametro-senha-checkbox">
+                        <input name="numeros" type="checkbox" id="numeros" class="checkbox" checked>
+                        <label for="numeros">Números (0-9)</label>
+                    </div>
+                    <div class="parametro-senha-checkbox">
+                        <input name="simbolos" type="checkbox" id="simbolos" class="checkbox">
+                        <label for="simbolos">Símbolos (!@#$%^&*)</label>
+                    </div>
+                </div>
+                
+                <div class="parametro-senha">
+                    <h4 class="parametro-senha__titulo">Força da senha</h4>
+                    <div class="barra-forca">
+                        <div class="forca" id="indicador-forca"></div>
+                    </div>
+                    <div class="parametro-senha-textos">
+                        <p>Fraca</p>
+                        <p>Média</p>
+                        <p>Forte</p>
+                    </div>
+                    <p class="entropia" id="entropia-info">Entropia: 0 bits</p>
+                </div>
+            </div>
+            
+            <button id="gerar-senha" class="botao-principal">Gerar Nova Senha</button>
+        </div>
+    </section>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do DOM
+            const campoSenha = document.getElementById('campo-senha');
+            const copiarSenha = document.getElementById('copiar-senha');
+            const gerarSenha = document.getElementById('gerar-senha');
+            const tamanhoSenha = document.getElementById('tamanho-senha');
+            const botaoDiminuir = document.querySelector('.diminuir');
+            const botaoAumentar = document.querySelector('.aumentar');
+            const checkboxMaiusculas = document.getElementById('maiusculas');
+            const checkboxMinusculas = document.getElementById('minusculas');
+            const checkboxNumeros = document.getElementById('numeros');
+            const checkboxSimbolos = document.getElementById('simbolos');
+            const indicadorForca = document.getElementById('indicador-forca');
+            const entropiaInfo = document.getElementById('entropia-info');
+            
+            // Conjuntos de caracteres
+            const maiusculas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const minusculas = 'abcdefghijklmnopqrstuvwxyz';
+            const numeros = '0123456789';
+            const simbolos = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            // Tamanho inicial da senha
+            let tamanho = 12;
+            
+            // Atualizar tamanho da senha
+            function atualizarTamanho(novoTamanho) {
+                tamanho = Math.max(4, Math.min(50, novoTamanho));
+                tamanhoSenha.textContent = tamanho;
+                gerarSenhaAleatoria();
+            }
+            
+            // Gerar senha aleatória
+            function gerarSenhaAleatoria() {
+                let caracteres = '';
+                if (checkboxMaiusculas.checked) caracteres += maiusculas;
+                if (checkboxMinusculas.checked) caracteres += minusculas;
+                if (checkboxNumeros.checked) caracteres += numeros;
+                if (checkboxSimbolos.checked) caracteres += simbolos;
+                
+                // Verificar se pelo menos um tipo de caractere está selecionado
+                if (caracteres === '') {
+                    alert('Selecione pelo menos um tipo de caractere!');
+                    return;
+                }
+                
+                let senha = '';
+                for (let i = 0; i < tamanho; i++) {
+                    const randomIndex = Math.floor(Math.random() * caracteres.length);
+                    senha += caracteres[randomIndex];
+                }
+                
+                campoSenha.value = senha;
+                avaliarForcaSenha(senha, caracteres);
+            }
+            
+            // Avaliar força da senha
+            function avaliarForcaSenha(senha, conjuntoCaracteres) {
+                // Calcular entropia
+                const tamanhoConjunto = conjuntoCaracteres.length;
+                const entropia = Math.log2(Math.pow(tamanhoConjunto, senha.length));
+                entropiaInfo.textContent = `Entropia: ${Math.round(entropia)} bits`;
+                
+                // Determinar força
+                indicadorForca.className = 'forca';
+                
+                if (entropia < 40) {
+                    indicadorForca.classList.add('fraca');
+                } else if (entropia < 80) {
+                    indicadorForca.classList.add('media');
+                } else {
+                    indicadorForca.classList.add('forte');
+                }
+            }
+            
+            // Event listeners
+            botaoDiminuir.addEventListener('click', () => atualizarTamanho(tamanho - 1));
+            botaoAumentar.addEventListener('click', () => atualizarTamanho(tamanho + 1));
+            
+            gerarSenha.addEventListener('click', gerarSenhaAleatoria);
+            
+            copiarSenha.addEventListener('click', function() {
+                campoSenha.select();
+                document.execCommand('copy');
+                
+                // Feedback visual
+                const originalBackground = copiarSenha.style.backgroundColor;
+                copiarSenha.style.backgroundColor = '#4CAF50';
+                setTimeout(() => {
+                    copiarSenha.style.backgroundColor = originalBackground;
+                }, 1000);
+            });
+            
+            // Gerar senha quando qualquer checkbox é alterado
+            [checkboxMaiusculas, checkboxMinusculas, checkboxNumeros, checkboxSimbolos].forEach(checkbox => {
+                checkbox.addEventListener('change', gerarSenhaAleatoria);
+            });
+            
+            // Gerar senha inicial
+            gerarSenhaAleatoria();
+        });
+    </script>
+</body>
+</html>
